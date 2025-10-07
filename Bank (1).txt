@@ -1,0 +1,27 @@
+SELECT * FROM newschema.`bank data analystics` Join newschema.debitcredit;
+SELECT sum(`Funded Amount`) AS `Total Loan Amount Funded`  FROM newschema.`bank data analystics`;
+SELECT Count(`Client id`) AS `Total Loan Amount Funded`  FROM newschema.`bank data analystics`;
+SELECT sum(`Total Rec Prncp`) + sum(`Total Rrec int`) + sum(`Total Pymnt`)AS `Total Collection`  FROM newschema.`bank data analystics`;
+SELECT sum(`Total Rrec int`)AS `Total Interest`  FROM newschema.`bank data analystics`;
+SELECT `Branch Name`, SUM(`Total Rrec int`) + SUM(`Total Fees`) + SUM(`Total Rec Late fee`) + SUM(`Collection Recovery fee`) AS
+`Branch-Wise (Interest, Fees, Total Revenue)` FROM newschema.`bank data analystics` group by `Branch Name`;
+SELECT `State Name`, SUM(`Loan Amount`)  AS `State-Wise Loan` FROM newschema.`bank data analystics` group by `State Name`;
+SELECT `Religion`, SUM(`Loan Amount`) AS `Religion-Wise Loan` FROM newschema.`bank data analystics` 
+WHERE `Religion` IN ('Christian', 'Hindu', 'Muslim', 'Sikh') GROUP BY `Religion` ORDER BY `Religion-Wise Loan` ASC;
+SELECT YEAR(STR_TO_DATE(`Disbursement Date`, '%d-%m-%Y')) AS `Disbursement Year`, SUM(`Loan Amount`) AS 
+`Disbursement Trend` FROM newschema.`bank data analystics` GROUP BY YEAR(STR_TO_DATE(`Disbursement Date`, '%d-%m-%Y')) ORDER BY `Disbursement Year` ASC;
+SELECT `Grrade`, SUM(`Loan Amount`)  AS `Grade-Wise Loan` FROM newschema.`bank data analystics` where `Grrade` is not null  group by `Grrade`;
+SELECT count(`Client id`)  AS `Count of Default Loan` FROM newschema.`bank data analystics` where `Is Default Loan` ='Y';
+SELECT count(`Client id`)  AS `Count of Delinquent Clients` FROM newschema.`bank data analystics` where `Is Delinquent Loan` ='Y';
+SELECT concat(ROUND(100 * COUNT(CASE WHEN `Is Delinquent Loan` = 'Y' THEN `Client id` END) / 
+COUNT(`Client id`), 2), '%') AS `Delinquent Loans Rate` FROM newschema.`bank data analystics`;
+SELECT concat(ROUND(100 * COUNT(CASE WHEN `Is Default Loan` = 'Y' THEN `Client id` END) / 
+COUNT(`Client id`), 2), '%') AS `Default Loan Rate` FROM newschema.`bank data analystics`;
+SELECT SUM(`Loan Amount`) AS `Total Loan Amount`,CASE WHEN `Loan Status` = 'Active Loan' THEN 'Active'
+        WHEN `Loan Status` IN ('Fully Paid', 'Paid Off', 'Cancelled', 'Insurance Paid Off', 'Net-Off', 'Transferred') THEN 'Closed'
+        WHEN `Loan Status` = 'NPA' THEN 'Delinquent'
+        WHEN `Loan Status` = 'Write Off' THEN 'Defaulted'
+		ELSE 'Unknown' END AS `Loan Status-Wise Loan` FROM newschema.`bank data analystics` group by `Loan Status-Wise Loan`;
+SELECT `Age`, SUM(`Loan Amount`)  AS `Age Group-Wise Loan` FROM newschema.`bank data analystics` where `Age` is not null  group by `Age`;
+SELECT count(`Client id`)  AS `No Verified Loan` FROM newschema.`bank data analystics` where `Verification Status` ='Not Verified';
+SELECT `Term`, SUM(`Loan Amount`)  AS `Loan Maturity` FROM newschema.`bank data analystics` where `Term` is not null group by `Term`;
